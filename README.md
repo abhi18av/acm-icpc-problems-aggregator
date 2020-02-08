@@ -1,14 +1,8 @@
 # acm-icpc-problems-aggregator
 
-FIXME: description
-
-## Installation
-
-Download from http://example.com/FIXME.
+This repo houses the npm package [fetch-acm-icpc-problem](https://www.npmjs.com/package/@abhi18av/fetch-acm-icpc-problem)
 
 ## Usage
-
-FIXME: explanation
 
 Run the project directly:
 
@@ -18,25 +12,9 @@ Run the project's tests (they'll fail until you edit them):
 
     $ clj -A:test:runner
 
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020 Abhinav Sharma (@abhi18av)
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the MIT License
