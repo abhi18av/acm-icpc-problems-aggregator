@@ -1,95 +1,69 @@
 (ns abhi18av.acm-icpc-problems-aggregator
   (:use etaoin.api)
-  (:require [etaoin.keys :as keys]
-            [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]))
 
 ;;;;;;;;;
+
+
+;;=========== Setup the basic configs  =============
 
 (def base-problem-set-url "https://icpcarchive.ecs.baylor.edu/index.php?option=com_onlinejudge&Itemid=8")
 
-(def genomes
-  [
-   "BRZ-260",
-   "BRZ-116",
-   "BRZ-265",
-   "BRZ-266",
-   "BRZ-267",
-   "BRZ-268",
-   "BRZ-269",
-   "BRZ-117",
-   "BRZ-270",
-   "BRZ-271",
-   "BRZ-272",
-   "BRZ-273",
-   "BRZ-274",
-   "BRZ-275",
-   "BRZ-276",
-   "BRZ-277",
-   "BRZ-113",
-   "BRZ-114",
-   "BRZ-115",
-   "BRZ-294",
-   "BRZ-119",
-   "BRZ-283",
-   "BRZ-120",
-   "BRZ-121",
-   "BRZ-122",
-   "BRZ-123",
-   "BRZ-124",
-   "BRZ-126",
-   "BRZ-127",
-   "BRZ-291",
-   "BRZ-292",
-   "BRZ-293",
-   "BRZ-280",
-   "BRZ-295",
-   "BRZ-297",
-   "BRZ-259",
-   "BRZ-285",
-   "BRZ-261",
-   "BRZ-263",
-   "BRZ-264",
-   "BRZ-303",
-   "BRZ-278",
-   "BRZ-279",
-   "BRZ-288",
-   "BRZ-298",
-   "BRZ-281",
-   "BRZ-282",
-   "BRZ-289",
-   "BRZ-286",
-   "BRZ-287",
-   "BRZ-300",
-   "BRZ-302",
-   "BRZ-290",
-   "BRZ-301",
-   ])
+(def config
+  (edn/read-string
+    (slurp "src/abhi18av/config.edn")))
 
-(def driver (firefox {:path-driver  "/usr/local/bin/geckodriver"
-                      :path-browser "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox"}))
-
-;;;;;;;;;
+(def driver (firefox {:path-driver  (:path-driver config)
+                      :path-browser (:path-browser config)}))
 
 
-(go driver "https://www.ebi.ac.uk/ena")
+;;=========== Code Body  =============
 
-(defn extract-r-file-links-for-a-genome [genome-id]
-  (clear driver {:id "local-searchbox"})
-  (fill driver {:id "local-searchbox"} genome-id)
+(go driver base-problem-set-url)
+
+(def archives (rest
+                (children driver
+                          (query driver {:css "html body table tbody tr td.main table tbody tr td.maincontent table tbody"})
+                          {:css "tr"})))
+
+
+
+(comment
+  (map
+    (fn [el] (get-element-text-el driver el))
+    archives)
+
+
+  (get-element-text-el driver
+                       (first (children driver
+                                        (first archives)
+                                        {:tag "a"})))
+
   (click-el driver
-            (query driver {:fn/has-class "submit"}))
-
-  (wait driver 40)
-
-  (println genome-id)
-  (println
-    (get-element-attr driver {:css "td.resultReportsCell:nth-child(30) > div:nth-child(1) > a:nth-child(1)"} :href))
-  (println
-    (get-element-attr driver {:css "td.resultReportsCell:nth-child(30) > div:nth-child(1) > a:nth-child(3)"} :href)))
+            (first (children driver
+                             (first archives)
+                             {:tag "a"})))
 
 
 
-(map extract-r-file-links-for-a-genome genomes)
+  '())
+
+
+
+
+
+;;=========== Main function  =============
+
+(defn -main
+  "This function is the main entry point for the code.
+  Just fire up the repl, move to this namespace and execute `(main)`."
+  []
+  (do
+    (go driver base-problem-set-url)
+    ))
+
+
+
 
 
 
