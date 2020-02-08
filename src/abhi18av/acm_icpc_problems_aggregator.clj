@@ -11,7 +11,7 @@
 
 (def config
   (edn/read-string
-    (slurp "./config.edn")))
+    (slurp "src/abhi18av/config.edn")))
 
 (def driver (firefox {:path-driver  (:path-driver config)
                       :path-browser (:path-browser config)}))
@@ -20,6 +20,20 @@
 ;;=========== Code Body  =============
 
 (go driver base-problem-set-url)
+
+(def archives (rest
+                (query-all driver {:css "html body table tbody tr td.main table tbody tr td.maincontent table tbody tr"})))
+
+
+(comment
+  (map
+    (fn [el] (get-element-text-el driver el))
+    archives)
+
+  '())
+
+
+
 
 
 ;;=========== Main function  =============
