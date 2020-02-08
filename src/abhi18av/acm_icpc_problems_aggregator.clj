@@ -22,13 +22,29 @@
 (go driver base-problem-set-url)
 
 (def archives (rest
-                (query-all driver {:css "html body table tbody tr td.main table tbody tr td.maincontent table tbody tr"})))
+                (children driver
+                          (query driver {:css "html body table tbody tr td.main table tbody tr td.maincontent table tbody"})
+                          {:css "tr"})))
+
 
 
 (comment
   (map
     (fn [el] (get-element-text-el driver el))
     archives)
+
+
+  (get-element-text-el driver
+                       (first (children driver
+                                        (first archives)
+                                        {:tag "a"})))
+
+  (click-el driver
+            (first (children driver
+                             (first archives)
+                             {:tag "a"})))
+
+
 
   '())
 
