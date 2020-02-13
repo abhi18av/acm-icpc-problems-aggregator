@@ -9,6 +9,8 @@
 
 ;;=========== Setup the basic configs  =============
 
+(def base-acm-icpc-archive-url "https://icpcarchive.ecs.baylor.edu/")
+
 (def base-problem-set-url "https://icpcarchive.ecs.baylor.edu/index.php?option=com_onlinejudge&Itemid=8")
 
 (def base-external-pdf-link "https://icpcarchive.ecs.baylor.edu/")
@@ -94,39 +96,59 @@
 (comment
 
   (map
-    (fn [el] (let [raw-text (get-element-text-el driver el)
-                   text-content (str/split-lines (get-element-text-el driver el))
-                   text-content (str/split-lines (get-element-text-el driver el))
+    (fn [el] (let [;;TODO Create a separate function to compute the `string and url`
+                   problem-set-volume-string (get-element-inner-html driver {:xpath "/html/body/table[3]/tbody/tr/td[3]/table/tbody/tr[1]/td/div[2]/a[3]"})
+                   problem-set-volume-link (str base-acm-icpc-archive-url
+                                                (get-element-attr driver
+                                                                  {:xpath "/html/body/table[3]/tbody/tr/td[3]/table/tbody/tr[1]/td/div[2]/a[3]"}
+                                                                  :href))
+
+                   raw-problem-text (get-element-text-el driver el)
+                   text-content (str/split-lines raw-problem-text)
                    problem-id (first (butlast (str/split (first text-content) #" ")))
                    ;; REFACTOR the extraction of `-` from the problem name
                    problem-name (str/join " " (rest (rest (butlast (str/split (first text-content) #" ")))))
+                   problem-url (get-element-attr-el driver
+                                                    el
+                                                    :href)
                    total-submissions (last (str/split (first text-content) #" "))
-                   [submissions-solving-percent total-users users-solving-percent] (rest text-content)]
+                   [submissions-solving-percent
+                    total-users
+                    users-solving-percent] (rest text-content)]
                {:problem-id                  problem-id
+                :problem-url                 problem-url
                 :problem-name                problem-name
                 :total-submissions           total-submissions
                 :submissions-solving-percent submissions-solving-percent
                 :total-users                 total-users
-                :users-solving-percent       users-solving-percent}))
+                :users-solving-percent       users-solving-percent
+                :problem-set-volume-string   problem-set-volume-string
+                :problem-set-volume-link     problem-set-volume-link}))
     page3)
 
 
-  (str/split-lines (get-element-text-el driver (first page3)))
-
-  (get-element-text-el driver
-                       (second (children driver
-                                         (first page3)
-                                         {:tag "a"})))
-
-  (get-element-attr driver
-                    (second (children driver
-                                      (first page3)
-                                      {:tag "a"}))
-                    "href")
+  (defn problem-url [el]
+    (get-element-attr-el driver
+                         (second (children driver
+                                           el
+                                           {:tag "a"}))
+                         :href))
 
 
 
+  (map
+    (fn [el] (let [problem-url (get-element-attr-el driver
+                                                    (second (children driver
+                                                                      el
+                                                                      {:tag "a"}))
+                                                    :href)]
+               {:problem-url problem-url}))
+    page3)
 
+
+  (get-element-attr-el driver
+                       (first page3)
+                       :a)
 
 
   ;; TODO Figure out why some elements return `nil`
