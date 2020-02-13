@@ -93,7 +93,51 @@
                        {:css "tr"})))
 
 
+(defn get-problem-url [el]
+  (get-element-attr-el driver
+                       (second (children driver
+                                         el
+                                         {:tag "a"}))
+                       :href))
+
+
+
 (comment
+
+
+  (map (fn [el] (get-element-text-el driver el)) page3)
+
+  (for [el page3]
+    (println (get-element-text-el driver el)))
+
+  (get-problem-url (first page3))
+  (get-problem-url (second page3))
+  (map get-problem-url (take 2 page3))
+
+  (get-problem-url (last page3))
+
+  (map get-problem-url page3)
+
+
+  (for [el page3]
+    (println (get-problem-url el)))
+
+  (get-problem-url (nth page3 2))
+  (get-element-text-el driver (nth page3 2))
+
+  (for [el page3]
+    (doto (println (get-problem-url el))
+      (println (get-element-text-el driver el))))
+
+
+
+
+  (get-element-text-el driver (first page3))
+  (get-element-property-el driver (first page3) :href)
+  (get-element-inner-html-el driver (first page3))
+  (get-element-attr-el driver (first page3) :a)
+
+
 
   (map
     (fn [el] (let [;;TODO Create a separate function to compute the `string and url`
@@ -108,15 +152,13 @@
                    problem-id (first (butlast (str/split (first text-content) #" ")))
                    ;; REFACTOR the extraction of `-` from the problem name
                    problem-name (str/join " " (rest (rest (butlast (str/split (first text-content) #" ")))))
-                   problem-url (get-element-attr-el driver
-                                                    el
-                                                    :href)
+                   problem-url (problem-url el)
                    total-submissions (last (str/split (first text-content) #" "))
                    [submissions-solving-percent
                     total-users
                     users-solving-percent] (rest text-content)]
                {:problem-id                  problem-id
-                :problem-url                 problem-url
+                ;:problem-url                 problem-url
                 :problem-name                problem-name
                 :total-submissions           total-submissions
                 :submissions-solving-percent submissions-solving-percent
@@ -127,12 +169,6 @@
     page3)
 
 
-  (defn problem-url [el]
-    (get-element-attr-el driver
-                         (second (children driver
-                                           el
-                                           {:tag "a"}))
-                         :href))
 
 
 
