@@ -1,0 +1,3 @@
+[submodule "resources/fetch-acm-icpc-problem"]
+	path = resources/fetch-acm-icpc-problem
+	url = https://github.com/abhi18av/fetch-acm-icpc-problem
