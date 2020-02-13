@@ -1,9 +1,11 @@
 (ns abhi18av.acm-icpc-problems-aggregator
   (:use etaoin.api)
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]))
 
 ;;;;;;;;;
-
+;; TODO use stack to implement the DFS
+;; https://www.braveclojure.com/java/
 
 ;;=========== Setup the basic configs  =============
 
@@ -90,15 +92,42 @@
 
 
 (comment
+
   (map
-    (fn [el] (get-element-text-el driver el))
+    (fn [el] (let [raw-text (get-element-text-el driver el)
+                   text-content (str/split-lines (get-element-text-el driver el))
+                   text-content (str/split-lines (get-element-text-el driver el))
+                   problem-id (first (butlast (str/split (first text-content) #" ")))
+                   ;; REFACTOR the extraction of `-` from the problem name
+                   problem-name (str/join " " (rest (rest (butlast (str/split (first text-content) #" ")))))
+                   total-submissions (last (str/split (first text-content) #" "))
+                   [submissions-solving-percent total-users users-solving-percent] (rest text-content)]
+               {:problem-id                  problem-id
+                :problem-name                problem-name
+                :total-submissions           total-submissions
+                :submissions-solving-percent submissions-solving-percent
+                :total-users                 total-users
+                :users-solving-percent       users-solving-percent}))
     page3)
 
+
+  (str/split-lines (get-element-text-el driver (first page3)))
 
   (get-element-text-el driver
                        (second (children driver
                                          (first page3)
                                          {:tag "a"})))
+
+  (get-element-attr driver
+                    (second (children driver
+                                      (first page3)
+                                      {:tag "a"}))
+                    "href")
+
+
+
+
+
 
   ;; TODO Figure out why some elements return `nil`
   (map
@@ -121,15 +150,16 @@
 ;;=========== Page-4  =============
 
 
-(def pdf-link (str base-external-pdf-link (get-element-attr-el driver
-                                                               (query driver
-                                                                      {:css ".maincontent > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(5)"})
-                                                               :href)))
+(def pdf-link (str base-external-pdf-link
+                   (get-element-attr-el driver
+                                        (query driver
+                                               {:css ".maincontent > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > a:nth-child(5)"})
+                                        :href)))
 
 
 (comment
 
-
+  (back driver)
 
 
   '())
